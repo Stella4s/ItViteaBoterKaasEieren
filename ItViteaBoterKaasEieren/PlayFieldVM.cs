@@ -5,25 +5,28 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace ItViteaBoterKaasEieren 
 {
     public class PlayFieldVM : INotifyPropertyChanged
     {
         #region private var for public properties
-        private FieldSquare[,] _PlayingField;
+        private FieldSquare[] _PlayingField;
         private int _TurnCounter;
+        //Using fieldsize as variable to allow for more flexible code to change easily in one spot instead of throughout entire document.
+        private readonly int fieldSize = 3;
         private bool _IsPlayer1;
         #endregion
 
         public PlayFieldVM ()
         {
-            _PlayingField = new FieldSquare[3,3];
+            PlayingField = new FieldSquare[fieldSize * fieldSize];
             StartGame();
         }
 
         #region public properties
-        public FieldSquare[,] PlayingField
+        public FieldSquare[] PlayingField
         {
             get { return _PlayingField; }
             set
@@ -55,9 +58,26 @@ namespace ItViteaBoterKaasEieren
         #region methods
         public void StartGame()
         {
-            ResetPlayField();
+            InitializePlayField();
             IsPlayer1 = true;
             TurnCounter = 0;
+        }
+        /// <summary>
+        /// Initalises or resets FieldSquares in playingfield. 
+        /// If a Square is null a new obj will be made, otherwise it will be reset.
+        /// </summary>
+        public void InitializePlayField()
+        {
+            for (int i = 0; i < (fieldSize * fieldSize); i++)
+            {
+                if (PlayingField[i] is null)
+                    PlayingField[i] = new FieldSquare { FieldState = FieldSquare.FieldStates.None, Symbol = "" };
+                else
+                {
+                    PlayingField[i].FieldState = FieldSquare.FieldStates.None;
+                    PlayingField[i].Symbol = "";
+                }
+            }
         }
         public void NextTurn()
         {
@@ -68,22 +88,36 @@ namespace ItViteaBoterKaasEieren
                 IsPlayer1 = true;
             TurnCounter++;
         }
-        public void ResetPlayField()
+        #region SquareField Specific Methods
+        public void ClickField(object sender)
         {
-            
-            for (int i = 0; i < 3; i++)
+            var field = (FieldSquare)sender;
+            if (field.FieldState == FieldSquare.FieldStates.None)
             {
-                for (int j = 0; j < 3; j++)
-                {
-                    //square = new FieldSquare();
-                    //square.FieldState = FieldSquare.FieldStates.None;
-                }
+                if (IsPlayer1)
+                    field.FieldState = FieldSquare.FieldStates.Cross;
+                else
+                    field.FieldState = FieldSquare.FieldStates.Circle;
+                NextTurn();
             }
         }
-
-        #region SquareField Specific Methods
-    
         #endregion
+        #endregion
+
+        #region ICommands
+        private ICommand _ClickFieldCmd;
+        public ICommand ClickFieldCmd
+        {
+            get
+            {
+                if (_ClickFieldCmd == null)
+                {
+                    _ClickFieldCmd = new RelayCommand(
+                        p => ClickField(p));
+                }
+                return _ClickFieldCmd;
+            }
+        }
         #endregion
 
         #region INotifyPropertyChanged

@@ -16,8 +16,11 @@
         <DataTemplate x:Key="DataTemplate1">
             <Button x:Name="mainBtn"  
                     HorizontalContentAlignment="Stretch"  
-                    VerticalContentAlignment="Stretch">
-                <TextBlock x:Name="textBlock1" Text="" 
+                    VerticalContentAlignment="Stretch"
+                    Command="{Binding DataContext.ClickFieldCmd , RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                    CommandParameter="{Binding}">
+
+                <TextBlock x:Name="textBlock1" Text="{Binding Symbol}" 
                            VerticalAlignment="Center" 
                            HorizontalAlignment="Center"/>
             </Button>
@@ -46,24 +49,24 @@
                       ItemTemplate="{DynamicResource DataTemplate1}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <UniformGrid  Rows="3" Columns="3"/>
+                    <UniformGrid/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>
 
-        <!-- <Grid Margin="5" Background="WhiteSmoke">
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
+        <Grid Grid.Column="1" Margin="5">
+            <StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Turn:"/>
+                <TextBlock Grid.Column="1" Text="{Binding TurnCounter}"/>
+            </Grid>
+                <Button Content="" />
+            </StackPanel>
+        </Grid>
 
-        </Grid>-->
-        
     </Grid>
 </Window>
