@@ -18,11 +18,13 @@
                     HorizontalContentAlignment="Stretch"  
                     VerticalContentAlignment="Stretch"
                     Command="{Binding DataContext.ClickFieldCmd , RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                    CommandParameter="{Binding}">
+                    CommandParameter="{Binding}"
+                    Padding="0">
 
                 <TextBlock x:Name="textBlock1" Text="{Binding Symbol}" 
                            VerticalAlignment="Center" 
-                           HorizontalAlignment="Center"/>
+                           HorizontalAlignment="Center" FontFamily="Corbel"
+                           FontSize="120" UseLayoutRounding="True"/>
             </Button>
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding FieldState}" Value="None">
@@ -36,15 +38,29 @@
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
+
+        <Style TargetType="Button">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="5"/>
+        </Style>
+
+        <Style TargetType="Label">
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="BorderBrush" Value="Gray"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
     </Window.Resources>
     
     <Grid Background="LightGray">
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3.2*"/>
             <ColumnDefinition/>
-            <ColumnDefinition Width="0.33*"/>
         </Grid.ColumnDefinitions>
 
-        <ItemsControl Margin="5" Background="WhiteSmoke" 
+
+        <ItemsControl Margin="5,5,2,5" Background="WhiteSmoke" 
                       ItemsSource="{Binding PlayingField}" 
                       ItemTemplate="{DynamicResource DataTemplate1}">
             <ItemsControl.ItemsPanel>
@@ -54,9 +70,23 @@
             </ItemsControl.ItemsPanel>
         </ItemsControl>
 
-        <Grid Grid.Column="1" Margin="5">
+
+        <Grid Grid.Column="1" Margin="2,5">
             <StackPanel>
+                <!-- Turncounter visibility for testing purposes.
                 <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Turn:"/>
+                    <TextBlock Grid.Column="1" Text="{Binding TurnCounter}"/>
+                </Grid>-->
+                <Button Content="New Game" Command="{Binding RestartGameCmd}" ToolTip="Starts a new game."/>
+                <Button Content="Reset Game" Command="{Binding ResetGameCmd}" ToolTip="Resets the game and all points."/>
+
+                <Border BorderBrush="Gray" BorderThickness="1">
+                <Grid Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition/>
@@ -65,15 +95,18 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
+                        <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Turn:"/>
-                    <TextBlock Grid.Column="1" Text="{Binding TurnCounter}"/>
-                    <TextBlock Grid.Row="1" Text="Points X"/>
-                    <TextBlock Grid.Row="1" Grid.Column="1" Text="Points O"/>
-                    <TextBlock Grid.Row="2" Text="{Binding Player1Points}"/>
-                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Player2Points}"/>
+                    <Label Grid.Row="0" Grid.ColumnSpan="3" Content="ScoreBoard" Background="{DynamicResource {x:Static SystemColors.ScrollBarBrushKey}}"/>
+                    <Label Grid.Row="1" Grid.Column="0"     Content="X"/>
+                    <Label Grid.Row="1" Grid.Column="1"     Content="Ties"/>
+                    <Label Grid.Row="1" Grid.Column="2"     Content="O"/>
+                    <Label Grid.Row="2" Grid.Column="0"     Content="{Binding Player1Points}"/>
+                    <Label Grid.Row="2" Grid.Column="1"     Content="{Binding TiePoints}"/>
+                    <Label Grid.Row="2" Grid.Column="2"     Content="{Binding Player2Points}"/>
                 </Grid>
-                <Button Content="Restart Game" Command="{Binding RestartGameCmd}"/>
+                </Border>
+                
             </StackPanel>
         </Grid>
 

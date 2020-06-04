@@ -13,7 +13,7 @@ namespace ItViteaBoterKaasEieren
     {
         #region private var for public properties
         private FieldSquare[] _PlayingField;
-        private int _TurnCounter, _Player1Points, _Player2Points;
+        private int _TurnCounter, _Player1Points, _Player2Points, _TiePoints;
         //Using fieldsize as variable to allow for more flexible code to change easily in one spot instead of throughout entire document.
         private readonly int fieldSize = 3;
         private bool _IsPlayer1;
@@ -62,6 +62,15 @@ namespace ItViteaBoterKaasEieren
                 OnPropertyChanged();
             }
         }
+        public int TiePoints
+        {
+            get { return _TiePoints; }
+            set
+            {
+                _TiePoints = value;
+                OnPropertyChanged();
+            }
+        }
         public bool IsPlayer1
         {
             get { return _IsPlayer1; }
@@ -81,6 +90,7 @@ namespace ItViteaBoterKaasEieren
         {
             Player1Points = 0;
             Player2Points = 0;
+            TiePoints = 0;
             StartGame();
         }
         /// <summary>
@@ -91,6 +101,7 @@ namespace ItViteaBoterKaasEieren
             InitializePlayField();
             IsPlayer1 = true;
             isWinner = false;
+            isEndGame = false;
             TurnCounter = 0;
         }
         /// <summary>
@@ -124,7 +135,7 @@ namespace ItViteaBoterKaasEieren
                 IsPlayer1 = true;
         }
 
-        private bool isWinner;
+        private bool isWinner, isEndGame;
         public void CheckWin()
         {
             //Check if TurnCounter is above certain value to see if enough turns even passed for a sufficiently long row to be possible.
@@ -170,7 +181,8 @@ namespace ItViteaBoterKaasEieren
                     if (symbolCounterA == fieldSize || symbolCounterB == fieldSize ||
                         symbolCounterC == fieldSize || symbolCounterD == fieldSize)
                     {
-                        HasWon();
+                        isWinner = true;
+                        EndGame();
                         break;
                     }
 
@@ -178,18 +190,25 @@ namespace ItViteaBoterKaasEieren
                     symbolCounterA = 0; symbolCounterB = 0;
                 }
 
+                if (TurnCounter == (fieldSize * fieldSize) && !isWinner)
+                    EndGame();
+
             }
         }
-        public void HasWon()
+        public void EndGame()
         {
-            isWinner = true;
-            if (IsPlayer1)
-                Player1Points++;
+            if (isWinner)
+            {
+                if (IsPlayer1)
+                    Player1Points++;
+                else
+                    Player2Points++;
+            }
             else
-                Player2Points++;
+                TiePoints++;
+            isEndGame = true;
         }
 
-        #region SquareField Specific Methods
         /// <summary>
         /// Method for handling Fields being clicked.
         /// If the fieldstate is none. (Aka not used.)
@@ -200,17 +219,22 @@ namespace ItViteaBoterKaasEieren
         /// <param name="sender">The specific FieldSquare that is being clicked.</param>
         public void ClickField(object sender)
         {
-            var field = (FieldSquare)sender;
-            if (field.FieldState == FieldSquare.FieldStates.None)
+            //Reset the game if the game has ended but a field is clicked.
+            if (isEndGame)
+                StartGame();
+            else
             {
-                if (IsPlayer1)
-                    field.FieldState = FieldSquare.FieldStates.Cross;
-                else
-                    field.FieldState = FieldSquare.FieldStates.Circle;
-                NextTurn();
+                var field = (FieldSquare)sender;
+                if (field.FieldState == FieldSquare.FieldStates.None)
+                {
+                    if (IsPlayer1)
+                        field.FieldState = FieldSquare.FieldStates.Cross;
+                    else
+                        field.FieldState = FieldSquare.FieldStates.Circle;
+                    NextTurn();
+                }
             }
         }
-        #endregion
         #endregion
 
         #region ICommands
@@ -238,6 +262,19 @@ namespace ItViteaBoterKaasEieren
                         p => StartGame());
                 }
                 return _RestartGameCmd;
+            }
+        }
+        private ICommand _ResetGameCmd;
+        public ICommand ResetGameCmd
+        {
+            get
+            {
+                if (_ResetGameCmd == null)
+                {
+                    _ResetGameCmd = new RelayCommand(
+                        p => InitializeGame());
+                }
+                return _ResetGameCmd;
             }
         }
         #endregion
