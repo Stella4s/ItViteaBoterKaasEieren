@@ -56,15 +56,24 @@
 
         <Grid Grid.Column="1" Margin="5">
             <StackPanel>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="Turn:"/>
-                <TextBlock Grid.Column="1" Text="{Binding TurnCounter}"/>
-            </Grid>
-                <Button Content="" />
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Turn:"/>
+                    <TextBlock Grid.Column="1" Text="{Binding TurnCounter}"/>
+                    <TextBlock Grid.Row="1" Text="Points X"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="Points O"/>
+                    <TextBlock Grid.Row="2" Text="{Binding Player1Points}"/>
+                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Player2Points}"/>
+                </Grid>
+                <Button Content="Restart Game" Command="{Binding RestartGameCmd}"/>
             </StackPanel>
         </Grid>
 
